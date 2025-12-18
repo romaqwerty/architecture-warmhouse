@@ -114,8 +114,14 @@
 
 ### 2. Документация API
 
- 1. Внешнее API [open-api](schemas/api/warmhouse-api.yml)
- 2. Внутреннее API [async-api](schemas/api/warmhouse-asyncapi.yml)
+ 1. Внешнее API
+    ```markdown
+    [open-api](schemas/api/warmhouse-api.yml)
+    ```
+ 2. Внутреннее API
+    ```markdown
+    [async-api](schemas/api/warmhouse-asyncapi.yml)
+    ```
 # Задание 5. Работа с docker и docker-compose
 
 Перейдите в apps.
