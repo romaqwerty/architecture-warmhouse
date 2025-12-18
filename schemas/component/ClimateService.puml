@@ -1,0 +1,29 @@
+@startuml
+title Сервис обработки телеметрии отопления
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(device, "Устройство", "Устройство умного дома")
+ContainerQueue(Broker, "Брокер сообщений", "Kafka")
+Container_Boundary(WarmHouse, "Система Теплый дом") {
+  Container(СlimateService, "Сервис управления телеметрией отопления", "Java, Spring", "Сбор событий с датчиков и отправка команд на датчики отопления")
+}
+
+Container(СlimateService, "Сервис управления сценариями умного дома", "Java, Spring") {
+  Component(СlimateController, "Контроллер прима телеметрии отопления", "Component: Rest Controller", "Получение событий отопления с датчиков")
+  Component(СlimateLogicService, "Сервис работы с логикой телеметрии отопления", "Component: Spring Boot", "Логика работы c данными телеметрии отопления")
+  Component(СlimateConsumer, "Консьюмер команд", "Component: Spring Boot", "Чтение команд для управления датчиками отопления")
+  Component(СlimateProducer, "Продьюсер событий", "Component: Spring Boot", "Отправка событий телеметрии Передача данных на обработку в систему")
+}
+
+Rel(device,СlimateController,"Получения события телеметрии отопления")
+Rel(СlimateController,СlimateLogicService,"Передача данных")
+Rel(СlimateLogicService,СlimateProducer,"Отправка события от датчика в брокер")
+Rel(СlimateProducer,Broker,"Сохранение события от датчика в брокере")
+Rel(Broker,СlimateConsumer,"Чтение команды для датчика с брокера")
+Rel(СlimateConsumer,СlimateLogicService,"Передача данных")
+Rel(СlimateLogicService,device,"Отправка команды на датчик")
+
+@enduml

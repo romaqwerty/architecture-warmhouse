@@ -20,11 +20,11 @@ Container(ScenarioService, "Сервис управления сценариям
   Component(DeviceService, "Сервис устройств", "Component: Spring Boot", "Логика выполнение команд над устройством умного дома")
   Component(ScenarioRepository, "Репозиторий сценариев умного дома", "Component: Spring Boot", "Взаимодействие с БД")
 }
+
 Rel(user,ScenarioController,"Отправка данных")
 Rel(ScenarioController,ScenarioLogicService,"Вызов функций")
 Rel(ScenarioLogicService,ScenarioRepository,"Изменение состояния умного дома")
 Rel(ScenarioRepository,ScenarioDatabase,"Чтение/запись данных")
-
 Rel(ScenarioLogicService,DeviceProducer,"Публикация события изменения состояния датчика")
 Rel(DeviceConsumer,DeviceService,"Команда изменения состояния датчика")
 Rel(DeviceService,ScenarioLogicService,"Изменение состояния умного дома")

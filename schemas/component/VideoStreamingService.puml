@@ -1,0 +1,29 @@
+@startuml
+title Сервис обработки телеметрии видеонаблюдения
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(device, "Устройство", "Устройство умного дома")
+ContainerQueue(Broker, "Брокер сообщений", "Kafka")
+Container_Boundary(WarmHouse, "Система Теплый дом") {
+  Container(VideoStreamingService, "Сервис управления телеметрией видеонаблюдения", "Java, Spring", "Сбор событий с датчиков и отправка команд на датчики видеонаблюдения")
+}
+
+Container(VideoStreamingService, "Сервис управления сценариями умного дома", "Java, Spring") {
+  Component(VideoStreamingController, "Контроллер прима телеметрии видеонаблюдения", "Component: Rest Controller", "Получение событий видеонаблюдения с датчиков")
+  Component(VideoStreamingLogicService, "Сервис работы с логикой телеметрии видеонаблюдения", "Component: Spring Boot", "Логика работы c данными телеметрии видеонаблюдения")
+  Component(VideoStreamingConsumer, "Консьюмер команд", "Component: Spring Boot", "Чтение команд для управления датчиками видеонаблюдения")
+  Component(VideoStreamingProducer, "Продьюсер событий", "Component: Spring Boot", "Отправка событий телеметрии Передача данных на обработку в систему")
+}
+
+Rel(device,VideoStreamingController,"Получения события телеметрии видеонаблюдения")
+Rel(VideoStreamingController,VideoStreamingLogicService,"Передача данных")
+Rel(VideoStreamingLogicService,VideoStreamingProducer,"Отправка события от датчика в брокер")
+Rel(VideoStreamingProducer,Broker,"Сохранение события от датчика в брокере")
+Rel(Broker,VideoStreamingConsumer,"Чтение команды для датчика с брокера")
+Rel(VideoStreamingConsumer,VideoStreamingLogicService,"Передача данных")
+Rel(VideoStreamingLogicService,device,"Отправка команды на датчик")
+
+@enduml

@@ -38,7 +38,6 @@ Rel(APIController, GateAccessControlService, "Передача  показани
 Rel(APIController, LightingService, "Передача  показаний от датчиков")
 Rel(APIController, СlimateService, "Передача  показаний от датчиков")
 Rel(APIController, VideoStreamingService, "Передача  показаний от датчиков")
-Rel(DeviceController, Broker, "Команды управления жизненным циклом и статусом датчика")
 Rel(Broker, DeviceController, "События об изменении жизненного цикла и статуса датчика")
 Rel(HomeScenarioService, Broker,"Команды управления конфигурации и номенклатуры устройств пользователя")
 Rel(Broker, HomeScenarioService,"События об изменении конфигурации и номенклатуры устройств пользователя")

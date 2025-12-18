@@ -1,0 +1,30 @@
+@startuml
+title Сервис управления устройствами
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(admin, "Админ", "Админ системы Тёплый дом")
+ContainerQueue(Broker, "Брокер сообщений", "Kafka")
+Container_Boundary(WarmHouse, "Система Теплый дом") {
+  Container(DeviceService, "Сервис управления устройствами", "Java, Spring", "Управление номенклатурой устройств")
+  Container(DeviceDatabase, "База Данных номенклатуры устройств", "PostgreSQL", "Хранение информации о типах устройствах")
+}
+
+Container(DeviceService, "Сервис управления сценариями умного дома", "Java, Spring") {
+  Component(DeviceController, "Контроллер управления номенклатурой и конфигурациями датчиков", "Component: Rest Controller", "Получение запросов на добавление, удаление, изменение номенклатуры датчиков")
+  Component(DeviceProducer, "Продюсер событий об изменения номенклатуры и конфигурации датчиков", "Component: Kafka producer", "Отправка команд на изменение конфигурации датчиков")
+  Component(DeviceLogicService, "Сервис работы с состоянием датчиков разных типов", "Component: Spring Boot", "Логика работы  с состоянием умного дом")
+  Component(DeviceRepository, "Репозиторий номенклатуры и конфигураций датчиков", "Component: Spring Boot", "Взаимодействие с БД")
+}
+
+Rel(admin,DeviceController,"Регистрация/обновление номенклатуры и конфигурации датчиков")
+Rel(DeviceController,DeviceLogicService,"Изменение состояния номенклатуры и конфигурации датчиков")
+Rel(DeviceLogicService,DeviceRepository,"Сохранение данных в entity модель")
+Rel(DeviceRepository,DeviceDatabase,"Чтение/запись данных")
+Rel(DeviceLogicService,DeviceProducer,"Публикация события изменения состояний номенклатуры и конфигурации датчиков")
+Rel(DeviceProducer,Broker,"Публикация события")
+
+@enduml
+

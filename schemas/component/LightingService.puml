@@ -1,0 +1,29 @@
+@startuml
+title Сервис обработки телеметрии освещения
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(device, "Устройство", "Устройство умного дома")
+ContainerQueue(Broker, "Брокер сообщений", "Kafka")
+Container_Boundary(WarmHouse, "Система Теплый дом") {
+  Container(LightingService, "Сервис управления телеметрией освещения", "Java, Spring", "Сбор событий с датчиков и отправка команд на датчики освещения")
+}
+
+Container(LightingService, "Сервис управления сценариями умного дома", "Java, Spring") {
+  Component(LightingController, "Контроллер приема телеметрии освещения", "Component: Rest Controller", "Получение событий освещения с датчиков")
+  Component(LightingLogicService, "Сервис работы с логикой телеметрии освещения", "Component: Spring Boot", "Логика работы c данными телеметрии освещения")
+  Component(LightingConsumer, "Консьюмер команд", "Component: Spring Boot", "Чтение команд для управления датчиками освещения")
+  Component(LightingProducer, "Продьюсер событий", "Component: Spring Boot", "Отправка событий телеметрии Передача данных на обработку в систему")
+}
+
+Rel(device,LightingController,"Получения события телеметрии освещения")
+Rel(LightingController,LightingLogicService,"Передача данных")
+Rel(LightingLogicService,LightingProducer,"Отправка события от датчика в брокер")
+Rel(LightingProducer,Broker,"Сохранение события от датчика в брокере")
+Rel(Broker,LightingConsumer,"Чтение команды для датчика с брокера")
+Rel(LightingConsumer,LightingLogicService,"Передача данных")
+Rel(LightingLogicService,device,"Отправка команды на датчик")
+
+@enduml
