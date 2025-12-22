@@ -1,0 +1,29 @@
+@startuml
+title Сервис обработки телеметрии освещения
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+Person(device, "Устройство", "Устройство умного дома")
+ContainerQueue(Broker, "Брокер сообщений", "Kafka")
+Container_Boundary(WarmHouse, "Система Теплый дом") {
+  Container(GateAccessControlService, "Сервис управления телеметрией автоматических ворот", "Java, Spring", "Сбор событий с датчиков и отправка команд на датчики автоматических ворот")
+}
+
+Container(GateAccessControlService, "Сервис управления сценариями умного дома", "Java, Spring") {
+  Component(GateAccessControlController, "Контроллер приема телеметрии автоматических ворот", "Component: Rest Controller", "Получение событий автоматических ворот с датчиков")
+  Component(GateAccessControlLogicService, "Сервис работы с логикой телеметрии автоматических ворот", "Component: Spring Boot", "Логика работы c данными телеметрии автоматических ворот")
+  Component(GateAccessControlConsumer, "Консьюмер команд", "Component: Spring Boot", "Чтение команд для управления датчиками автоматических ворот")
+  Component(GateAccessControlProducer, "Продьюсер событий", "Component: Spring Boot", "Отправка событий телеметрии Передача данных на обработку в систему")
+}
+
+Rel(device,GateAccessControlController,"Получения события телеметрии автоматических ворот")
+Rel(GateAccessControlController,GateAccessControlLogicService,"Передача данных")
+Rel(GateAccessControlLogicService,GateAccessControlProducer,"Отправка события от датчика в брокер")
+Rel(GateAccessControlProducer,Broker,"Сохранение события от датчика в брокере")
+Rel(Broker,GateAccessControlConsumer,"Чтение команды для датчика с брокера")
+Rel(GateAccessControlConsumer,GateAccessControlLogicService,"Передача данных")
+Rel(GateAccessControlLogicService,device,"Отправка команды на датчик")
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml
+title Сервис обработки событий телеметрии
+
+top to bottom direction
+
+!includeurl https://raw.githubusercontent.com/RicardoNiepel/C4-PlantUML/master/C4_Component.puml
+
+ContainerQueue(Broker, "Брокер сообщений", "Kafka")
+Container_Boundary(WarmHouse, "Система Теплый дом") {
+  Container(TelemetryService, "Сервис управления событиями телеметрией", "Java, Spring", "Управление телеметрией устройств")
+  Container(TelemetryDatabase, "База Данных телеметрии", "PostgreSQL", "Хранение информации телеметрии устройств")
+}
+
+Container(TelemetryService, "Сервис управления сценариями умного дома", "Java, Spring") {
+  Component(TelemetryLogicService, "Сервис работы с состоянием датчиков разных типов", "Component: Spring Boot", "Логика работы данными телеметрии")
+  Component(TelemetryConsumer, "Репозиторий сценариев умного дома", "Component: Spring Boot", "Чтение событий от датчиков из брокера")
+  Component(TelemetryRepository, "Репозиторий данных телеметрии", "Component: Spring Boot", "Взаимодействие с БД")
+}
+
+Rel(Broker,TelemetryConsumer,"Чтение команды")
+Rel(TelemetryConsumer,TelemetryLogicService,"Изменение состояния номенклатуры или конфигурации датчиков")
+Rel(TelemetryLogicService,TelemetryRepository,"Сохранение данных в ентити модель")
+Rel(TelemetryRepository,TelemetryDatabase,"Чтение/запись данных")
+
+@enduml
